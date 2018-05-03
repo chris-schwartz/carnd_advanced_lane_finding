@@ -1,5 +1,5 @@
 
-#Advanced Lane Finding Project
+# Lane Finding Project
 
 ---
 
@@ -16,20 +16,9 @@ In order to accomplish this, the following steps were taken:
 * Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
 
 
-## Rubric Points
-**Below each project requirements is discussed and implementaions details are provided.**
+## Camera Calibration
 
----
-###Writeup / README
-
-#### Provide a Writeup / README that includes all the rubric points and how you addressed each one.  
-This document serves as the Writeup / README necessary to fulfill this requirement.  It discusses each of the project requirements and provides details regarding the project implementation.
-
-###Camera Calibration
-
-#### Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
-
-The code for this step is contained in the code cells of the IPython notebook located in _"./P4_Advanced_Lane_Finding.ipynb"_ under the section titled "Camera Calibration".
+The code use for computing a camera matrix and distorion coefficients can be found in the IPython notebook located in _"./P4_Advanced_Lane_Finding.ipynb"_ under the section titled "Camera Calibration".
 
 The first code block in this section, simply loads each of the twenty chessboard images used for calibration and displays them in a grid.  From these images, the inside corners were counted and it was determined that the chessboard used for calibration was a 9x6 board.
 
@@ -49,15 +38,16 @@ Below is a sample of the `undistort(..)` method being applied to one of the cali
 
 ![Calibrated Image](./output_images/camera_cal/calibrated_calibration3.jpg)
 
-###Pipeline (single images)
+## Pipeline (single images)
+A pipeline consisting of multiple different steps was constructed to process video input from the dashboard.  Below is a description of each step of the pipeline.
 
-#### Provide an example of a distortion-corrected image.
+### Distortion-correction
 The first step in the pipeline is to use the camera calibration matrix and distortion coefficients to remove distortion from the test images used in the pipeline.  Helper methods `load_and_undistort(..)` and `load_test_images(..)` were created to help make loading/undistorting test images easier.
 
 Below is an example of a test image that has had distortion removed.  More samples can be found in `./output_images/undistorted/`
 ![Test Image 1](./output_images/undistorted/test_img_1.jpg)
 
-#### Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
+### Binary Thresholding
 
 The section of the notebook titled "Binary Thresholding" contains all the code blocks used for converting images to a binary representation using color thresholds and gradient thresholds.
 
@@ -78,7 +68,7 @@ Below are some examples of applying the `threshold_pipeline(..)` to test images.
 ![Test Image 1](./output_images/binary/binary_1.jpg)
 ![Test Image 2](./output_images/binary/binary_2.jpg)
 
-#### Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
+### Perspective Transform/Warping
 
 The section in the notebook titled "Perspective Transform" contains the code necessary to warp the images taken from the car's dashboard camera into a bird's eye view of the highway.
 
@@ -103,7 +93,7 @@ To verify the transform's accuracy the source points were plotted on the source 
 Once source points and the corresponding destination points were decided, OpenCV's `getPerspectiveTransform(..)` was used to calculate the transform matrix and inverse transform matrix.  Finally, the transform matrix is applied to the image using OpenCV's `warpPerspective(..)` and the warped image is returned.
 
 
-#### Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
+### Identifying Lane Lines
 
 The next step after applying the binary threshold and perfroming the perspective warp is to use the resulting image to try to identify lane lines.  Below is a sample image of what images look like at this point in the pipeline.
 
@@ -131,7 +121,7 @@ Below is a sample image of the detected lanes in a test image. The left lane is 
 
 ![Lane Finding](./output_images/finding_lanes/binary_7.png)
 
-#### Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
+### Measuring Lane Curvature And Position.
 
 The next step is to compute the lane curvature of the detected lane lines and the position of the car relative to the center of the lane.  This is done in the section of the notebook titled "Measuring Lane Curvature And Lane Position".
 
@@ -151,7 +141,7 @@ Next, the center of the lane at the bottom of the image is calculated as the mid
 The car's position relative to the center of the lane is determined by finding the difference between the center of the lane and the car's center.  This is multiplied by 3.7/700 (meters/pixel in x dimension) to covnert the value to meters and is returned.
 
 
-#### Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
+### Unwarping
 
 The final step of the pipeline is to "unwarp" the warped image and draw the estimated lane area on the original image.
 
@@ -163,20 +153,15 @@ To acheive this, the x,y values for the left and right lanes are recast so they 
 
 ---
 
-###Pipeline (video)
-
-####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
+## Pipeline (video)
 
 Here's a [link to my video result](./project_video_result.mp4)  The left and right lane curvature estimates are shown as well as the offset of the vehcile from the center of the lane, the current lane width, and the average lane width.  
 
 If the difference of the current lane width from the average detected lane width exceeds 25% or the differences in the estimated curvatures for the left and right lanes is too great, the estimated lane position is deemed invalid and the last previous valid lane position is used.  Anytime a frame is ignored, the text is shown for these values is shown in red.
 
----
 
-###Discussion
 
-#### Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
-
+## Challenges, Limitations, and Opportunities for Improvement
 
 The most challenging part of this project was finding good threshold values and filtering for the binary encoding that would provide good results throughout the rest of the pipeline.  
 
